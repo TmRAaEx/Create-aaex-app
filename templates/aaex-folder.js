@@ -42,16 +42,16 @@ export default async function render(url, data, pageModule) {
 
 `;
 
-  // Paths baserat på baseDir
+  // Paths based on the base directory
   const aaexDir = path.join(baseDir, ".aaex");
   const serverDir = path.join(aaexDir, "server");
   const frameworkDir = path.join(aaexDir, "framework");
 
-  // Skapa mappar
+  // create directories if they don't exist
   ensureDir(serverDir);
   ensureDir(frameworkDir);
 
-  // Kopiera filer från .aaex-källan (relativt denna fil) till baseDir
+  //Copy server files and framework files
   const serverSrc = path.resolve(__dirname, "../server/devServer.js");
   const serverDest = path.join(serverDir, "devServer.js");
 
@@ -65,7 +65,7 @@ export default async function render(url, data, pageModule) {
   fs.copyFileSync(srcMatchRoutes, destMatchRoutes);
   fs.copyFileSync(srcParseRoutes, destParseRoutes);
 
-  // Skriv ut nya filer i rätt folder (inuti baseDir)
+  //create new files in frameworkDir
   fs.writeFileSync(
     path.join(frameworkDir, "client-entry.tsx"),
     clientEntryContent

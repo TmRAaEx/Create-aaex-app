@@ -34,17 +34,20 @@ async function main() {
   createAaexFolder(projectDir);
   createSrcFolder(projectDir, answers.useTailwind);
 
-  // Skapa vite.config.ts med tailwind-plugin om användaren vill ha
   await createViteConfig(projectDir, answers.useTailwind);
 
   if (answers.useTailwind) {
     await createTailwindConfig(projectDir);
   } else {
-    // Skapa src/index.css utan tailwind direktiv
     const cssDir = path.join(projectDir, "src");
     await fs.ensureDir(cssDir);
+
     const cssContent = `html, body {
-  margin: 0; padding: 0; box-sizing: border-box;}`;
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box;
+  }`;
+
     await fs.writeFile(path.join(cssDir, "index.css"), cssContent, "utf-8");
   }
 
@@ -95,9 +98,6 @@ html, body {
   await fs.writeFile(path.join(cssDir, "index.css"), cssContent, "utf-8");
   exec("npm install tailwindcss @tailwindcss/vite", { cwd: projectDir });
 }
-
-// Anpassa createAaexFolder och createSrcFolder så att t.ex. i client-entry.tsx
-// importera index.css om tailwind används
 
 main().catch((err) => {
   console.error(err);

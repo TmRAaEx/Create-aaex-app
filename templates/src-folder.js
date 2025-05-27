@@ -10,7 +10,7 @@ export default function createSrcFolder(baseDir, useTailwind = false) {
   const publicDir = path.join(srcDir, "public");
 
   const cssDir = path.join(srcDir, "styles");
-  // Skapa src-struktur
+  // create directories if they don't exist
   ensureDir(srcDir);
   ensureDir(pagesDir);
   ensureDir(componentsDir);
@@ -20,7 +20,7 @@ export default function createSrcFolder(baseDir, useTailwind = false) {
     ensureDir(cssDir);
   }
 
-  // App.tsx-innehåll
+  // App.tsx
   const appTsxContent = `import React from "react";
 import {
   BrowserRouter,
@@ -31,26 +31,21 @@ import {
 
 import "./index.css"; 
 
-// RouteInfo från din route-lista
 interface RouteInfo {
   path: string;
   fullPath: string;
 }
 
-// Props som App tar in - routes från file routing och initialData per route
 interface AppProps {
   routes: RouteInfo[];
-  initialData?: any;  // data från load-funktionen för SSR
-  url?: string;       // url för SSR
+  initialData?: any; 
+  url?: string;       
 }
 
-// Wrapper för att ladda sidan dynamiskt och injicera data som props
 function RouteWrapper({ route, initialData }: { route: RouteInfo; initialData?: any }) {
   const Component = React.lazy(() => import(/* @vite-ignore */ route.fullPath));
-  // Hämta params från react-router
   const params = useParams();
 
-  // Om du vill kan du köra klient-side load här, men enklast är att använda initialData från servern.
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <Component params={params} initialData={initialData} />
@@ -59,7 +54,6 @@ function RouteWrapper({ route, initialData }: { route: RouteInfo; initialData?: 
 }
 
 export default function App({ routes, initialData, url }: AppProps) {
-  // SSR: statisk router
   if (url) {
     const { StaticRouter } = require("react-router-dom/server");
     return (
@@ -77,7 +71,6 @@ export default function App({ routes, initialData, url }: AppProps) {
     );
   }
 
-  // Klient: BrowserRouter
   return (
     <BrowserRouter>
       <Routes>
@@ -94,7 +87,7 @@ export default function App({ routes, initialData, url }: AppProps) {
 }
 `;
 
-  // API-fil: hello.ts
+  // API-file: hello.ts
   const apiContent = `// src/api/hello.ts
 
 // Shared function to get a hello message
@@ -179,7 +172,7 @@ export default function Home({ message }) {
 }
 `;
 
-  // Spara filer i rätt mappar
+  // Create files in src folder
   fs.writeFileSync(path.join(srcDir, "App.tsx"), appTsxContent);
   fs.writeFileSync(path.join(apiDir, "hello.ts"), apiContent);
   fs.writeFileSync(

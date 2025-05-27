@@ -9,10 +9,10 @@ function parseRoute(filePath) {
     "/" +
     filePath
       .replace(/\\/g, "/") // Windows backslash -> slash
-      .replace(/\.(tsx|jsx|ts|js)$/, "") // ta bort filändelse
-      .replace(/\[([^\]]+)\]/g, ":$1") // dynamiska segment
-      .replace(/\/index$/, "") // ta bort trailing /index
-      .replace(/\/$/, ""); // ta bort trailing slash
+      .replace(/\.(tsx|jsx|ts|js)$/, "") // remove file extension
+      .replace(/\[([^\]]+)\]/g, ":$1") // dynamic segment
+      .replace("index", "") // remove index
+      .replace(/\/$/, ""); // remove trailing slash
 
   if (route === "") route = "/";
 
