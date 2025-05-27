@@ -1,0 +1,192 @@
+import fs from "fs";
+import path from "path";
+import ensureDir from "../helpers/ensure-dir.js";
+
+export default function createSrcFolder(baseDir, useTailwind = false) {
+  const srcDir = path.join(baseDir, "src");
+  const pagesDir = path.join(srcDir, "pages");
+  const apiDir = path.join(srcDir, "api");
+  const componentsDir = path.join(srcDir, "components");
+  const publicDir = path.join(srcDir, "public");
+
+  const cssDir = path.join(srcDir, "styles");
+  // Skapa src-struktur
+  ensureDir(srcDir);
+  ensureDir(pagesDir);
+  ensureDir(componentsDir);
+  ensureDir(apiDir);
+  ensureDir(publicDir);
+  if (!useTailwind) {
+    ensureDir(cssDir);
+  }
+
+  // App.tsx-innehåll
+  const appTsxContent = `import React from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useParams
+} from "react-router-dom";
+
+import "./index.css"; 
+
+// RouteInfo från din route-lista
+interface RouteInfo {
+  path: string;
+  fullPath: string;
+}
+
+// Props som App tar in - routes från file routing och initialData per route
+interface AppProps {
+  routes: RouteInfo[];
+  initialData?: any;  // data från load-funktionen för SSR
+  url?: string;       // url för SSR
+}
+
+// Wrapper för att ladda sidan dynamiskt och injicera data som props
+function RouteWrapper({ route, initialData }: { route: RouteInfo; initialData?: any }) {
+  const Component = React.lazy(() => import(/* @vite-ignore */ route.fullPath));
+  // Hämta params från react-router
+  const params = useParams();
+
+  // Om du vill kan du köra klient-side load här, men enklast är att använda initialData från servern.
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Component params={params} initialData={initialData} />
+    </React.Suspense>
+  );
+}
+
+export default function App({ routes, initialData, url }: AppProps) {
+  // SSR: statisk router
+  if (url) {
+    const { StaticRouter } = require("react-router-dom/server");
+    return (
+      <StaticRouter location={url}>
+        <Routes>
+          {routes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={<RouteWrapper route={route} initialData={initialData} />}
+            />
+          ))}
+        </Routes>
+      </StaticRouter>
+    );
+  }
+
+  // Klient: BrowserRouter
+  return (
+    <BrowserRouter>
+      <Routes>
+        {routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<RouteWrapper route={route} />}
+          />
+        ))}
+      </Routes>
+    </BrowserRouter>
+  );
+}
+`;
+
+  // API-fil: hello.ts
+  const apiContent = `// src/api/hello.ts
+
+// Shared function to get a hello message
+export function getHelloMessage() {
+  //here you can have any logic to fetch data, e.g., from a database or an external API
+  return { message: "Hello from the API!" };
+}
+
+// API endpoint accessible at /api/hello
+export default function handler(req, res) {
+  const data = getHelloMessage();
+  res.status(200).json(data);
+}
+`;
+
+  // Home page
+  const homePageContent = `// src/pages/index.tsx \n
+import { getHelloMessage } from "../api/hello";
+import "../styles/Home.css";
+
+export function load() {
+  const data = getHelloMessage();
+  return { message: data.message };
+}
+
+export default function Home({ message }) {
+  return (
+    <div className="home-container">
+      <h1 className="home-title">Welcome to the Home Page</h1>
+      <p className="home-text">This is the home page of your application.</p>
+      <p className="home-subtext">API server rendered test: {message}</p>
+    </div>
+  );
+}
+
+`;
+
+  const homePageContentWithTailwind = `// src/pages/index.tsx \n
+ import { getHelloMessage } from "../api/hello";
+
+export function load() {
+  const data = getHelloMessage();
+  return { message: data.message };
+}
+
+export default function Home({ message }) {
+  return (
+    <div className="max-w-3xl mx-auto p-6">
+      <h1 className="text-4xl font-bold mb-4 text-gray-900">Welcome to the Home Page</h1>
+      <p className="text-lg mb-2 text-gray-700">This is the home page of your application.</p>
+      <p className="text-md text-gray-600 italic">API server rendered test: {message}</p>
+    </div>
+  );
+}
+`;
+
+  const css = `/* Home.css */
+.home-container {
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem;
+}
+
+.home-title {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a202c; /* gray-900 */
+}
+
+.home-text {
+  font-size: 1.125rem; /* 18px */
+  margin-bottom: 0.5rem;
+  color: #4a5568; /* gray-700 */
+}
+
+.home-subtext {
+  font-size: 1rem;
+  color: #718096; /* gray-600 */
+  font-style: italic;
+}
+`;
+
+  // Spara filer i rätt mappar
+  fs.writeFileSync(path.join(srcDir, "App.tsx"), appTsxContent);
+  fs.writeFileSync(path.join(apiDir, "hello.ts"), apiContent);
+  fs.writeFileSync(
+    path.join(pagesDir, "index.tsx"),
+    useTailwind ? homePageContentWithTailwind : homePageContent
+  );
+  if (!useTailwind) {
+    fs.writeFileSync(path.join(cssDir, "Home.css"), css);
+  }
+}

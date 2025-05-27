@@ -1,0 +1,29 @@
+{
+  "name": "create-aaex-app",
+  "version": "1.0.0",
+  "description": "CLI to scaffold a new aaex app with dev server and framework files.",
+  "bin": {
+    "create-aaex-app": "./create.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node ./create.js",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [
+    "aaex",
+    "react",
+    "vite",
+    "cli",
+    "framework"
+  ],
+  "author": "Alexander",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "fs-extra": "2.1.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
