@@ -12,7 +12,6 @@ export async function startDevServer() {
   const vite = await createViteServer({
     server: { middlewareMode: true },
     appType: "custom",
-    plugins: [await import("@vitejs/plugin-react").then((m) => m.default())],
   });
 
   app.use(vite.middlewares);
