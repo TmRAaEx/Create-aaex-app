@@ -172,9 +172,34 @@ export default function Home({ message }) {
 }
 `;
 
+  const cssTailwind = `@import "tailwindcss";
+html, body {
+margin: 0;
+padding: 0;}
+
+*{
+  box-sizing: border-box;
+}
+`;
+
+  const indexCss = `
+html, body {
+margin: 0;
+padding: 0;}
+
+*{
+  box-sizing: border-box;
+}
+
+`;
+
   // Create files in src folder
   fs.writeFileSync(path.join(srcDir, "App.tsx"), appTsxContent);
   fs.writeFileSync(path.join(apiDir, "hello.ts"), apiContent);
+  fs.writeFileSync(
+    path.join(srcDir, "index.css"),
+    useTailwind ? cssTailwind : indexCss
+  );
   fs.writeFileSync(
     path.join(pagesDir, "index.tsx"),
     useTailwind ? homePageContentWithTailwind : homePageContent

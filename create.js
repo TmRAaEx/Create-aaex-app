@@ -3,21 +3,22 @@ import fs from "fs-extra";
 import path from "path";
 import inquirer from "inquirer";
 
+
 import createAaexFolder from "./templates/aaex-folder.js";
 import createSrcFolder from "./templates/src-folder.js";
-import { exec } from "child_process";
+import createRootFolder from "./templates/root-folder.js";
 
 async function main() {
   const answers = await inquirer.prompt([
     {
       name: "projectName",
-      message: "Vad ska projektet heta?",
+      message: "What will the project be named?",
       default: "my-aaex-app",
     },
     {
       name: "useTailwind",
       type: "confirm",
-      message: "Vill du använda Tailwind CSS?",
+      message: "Do you want tailwindcss?",
       default: true,
     },
   ]);
@@ -31,72 +32,19 @@ async function main() {
 
   await fs.ensureDir(projectDir);
 
+  // Skapa .aaex-mappen
   createAaexFolder(projectDir);
+
+  // Skapa src-mappen
   createSrcFolder(projectDir, answers.useTailwind);
 
-  await createViteConfig(projectDir, answers.useTailwind);
+  // Skapa root-filer (package.json, vite.config.ts, index.html, css)
+  await createRootFolder(projectDir, answers.projectName, answers.useTailwind);
 
-  if (answers.useTailwind) {
-    await createTailwindConfig(projectDir);
-  } else {
-    const cssDir = path.join(projectDir, "src");
-    await fs.ensureDir(cssDir);
-
-    const cssContent = `html, body {
-  margin: 0; 
-  padding: 0; 
-  box-sizing: border-box;
-  }`;
-
-    await fs.writeFile(path.join(cssDir, "index.css"), cssContent, "utf-8");
-  }
-
-  console.log(`Projektet "${answers.projectName}" är klart!`);
+  console.log(`Project setup for "${answers.projectName}" done!`);
   console.log(`  cd ${answers.projectName}`);
   console.log("  npm install");
   console.log("  npm run dev");
-}
-
-async function createViteConfig(projectDir, useTailwind) {
-  const viteConfigPath = path.join(projectDir, "vite.config.ts");
-  const viteConfigContent = `
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-
-export default defineConfig({
-  plugins: [react()],
-});
-`;
-
-  const viteConfigWithTailwind = `
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-
-});
-`;
-
-  await fs.writeFile(
-    viteConfigPath,
-    useTailwind ? viteConfigWithTailwind : viteConfigContent,
-    "utf-8"
-  );
-}
-
-async function createTailwindConfig(projectDir) {
-  // Skapa också src/index.css med tailwind directives
-  const cssDir = path.join(projectDir, "src");
-  await fs.ensureDir(cssDir);
-  const cssContent = `
-@import "tailwindcss";
-html, body {
-  margin: 0; padding: 0; box-sizing: border-box;}
-`;
-  await fs.writeFile(path.join(cssDir, "index.css"), cssContent, "utf-8");
-  exec("npm install tailwindcss @tailwindcss/vite", { cwd: projectDir });
 }
 
 main().catch((err) => {

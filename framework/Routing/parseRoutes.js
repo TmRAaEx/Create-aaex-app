@@ -1,4 +1,3 @@
-import { log } from "console";
 import fs from "fs";
 import path from "path";
 
@@ -35,5 +34,10 @@ export default function getRoutes() {
     }
     return routes;
   };
-  return walk();
+  const routes = walk();
+  console.log(
+    "✅ Registered Page routes:",
+    routes.map((r) => r.route)
+  );
+  return routes;
 }

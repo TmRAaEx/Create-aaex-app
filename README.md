@@ -1,7 +1,16 @@
 # AaEx JS — My Personal Framework
 
-### v1.0.1
+### v1.5.0
 
+Major code structure changes and hot reload fixes
+
+# Important:
+
+Iam not sure if the framework in its current state is stable or even able to be built and deployed.
+Will be working on that
+
+
+# Description
 AaEx JS is a lightweight framework I created for learning and to potentially speed up my development workflow. It builds on **Vite** with SSR (server-side rendering), uses **Express** as the backend server, and **React** for the frontend. Inspired by **Next.js**, it features file-based routing and a familiar developer experience.
 
 ---
@@ -68,9 +77,12 @@ export default function HelloWorld() {
 
 ```ts
 //src/api/helloworld.ts
+
 // can be asynnc and handle database Queries
 export function YourFunction() {
-  // this function will be utilized by the server
+  //this function can be moved outside the /api folder to somewhere like /lib
+
+  //here we can fetch data from our database
 
   return "Hello world";
 }
@@ -78,6 +90,51 @@ export function YourFunction() {
 export default function handler(req, res) {
   const data = YourFunction(); //here we reuse the datafetching function
   res.status(200).json(data);
+}
+```
+
+## How to use the API internally with SSR
+
+- ### Data fetching
+
+```tsx
+//src/pages/HelloWorld.tsx
+import { YourFunction } from "../api/helloworld.ts";
+//or import { YourFunction } from "../lib/helloworld.ts"
+
+// the load function will run on the server before rendering the page
+// here we could also do external API calls
+export async function load() {
+  const message = await YourFunction();
+
+  return { message };
+}
+
+export default function Home({ message }) {
+  return <h1>{message}</h1>; // will render as Hello world
+}
+```
+
+- ### With Params
+
+```tsx
+//src/pages/blog/[id].tsx
+import { getBlogById } from "../api/blogs/[id].ts";
+
+// the load function will get params from the url on the server
+export async function load({ params }) {
+  const blog = await getBlogById(params.id);
+
+  return { blog };
+}
+
+export default function Blog({ blog }) {
+  return (
+    <>
+      <h1>{blog.name}</h1>
+      <p>{blog.description}</p>
+    </>
+  );
 }
 ```
 
