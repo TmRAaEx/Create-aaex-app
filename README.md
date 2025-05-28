@@ -4,10 +4,6 @@
 
 Major code structure changes and hot reload fixes
 
-# Important:
-
-Iam not sure if the framework in its current state is stable or even able to be built and deployed.
-Will be working on that
 
 
 # Description
@@ -37,6 +33,16 @@ Your development server will start and you can begin building!
 
 ---
 
+
+# Disclaimer:
+
+Iam not sure if the framework in its current state is stable or even able to be built and deployed.
+Will be working on that
+
+---
+
+
+
 # Features
 
 - ## File-based routing — Create pages by adding files inside the `/src/pages` directory.
@@ -49,6 +55,7 @@ Your development server will start and you can begin building!
 
 - ## Optional Tailwind CSS support — Easily add Tailwind during project creation for utility-first styling.
 
+---
 # How to Create Routes
 
 ### Simply create a new .tsx or .jsx file inside /src/pages.
@@ -68,7 +75,7 @@ export default function HelloWorld() {
   // here we can later implement server-side data fetching
 }
 ```
-
+---
 ## How to Create API Endpoints
 
 ### - Add your API files inside /src/api.
@@ -92,6 +99,8 @@ export default function handler(req, res) {
   res.status(200).json(data);
 }
 ```
+
+---
 
 ## How to use the API internally with SSR
 
@@ -139,11 +148,12 @@ export default function Blog({ blog }) {
 ```
 
 ### - The file path maps to /api/< filename > automatically.
-
+---
 # Tailwind CSS Support
 
 When creating a new project via `create-aaex-app`, you can choose to enable Tailwind CSS integration. The setup will automatically include Tailwind dependencies and configure the necessary files.
 
+--- 
 # License
 
 ## MIT © TmRAaEx
