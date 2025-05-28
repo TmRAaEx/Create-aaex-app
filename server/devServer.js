@@ -3,6 +3,8 @@ import { createServer as createViteServer } from "vite";
 import getRoutes from "../framework/Routing/parseRoutes.js";
 import { setupApiHandler } from "../framework/Middlewares/apiHandler.js";
 import { setupPageHandler } from "../framework/Middlewares/pageHandler.js";
+import path from "path";
+
 
 export async function startDevServer() {
   const app = express();
