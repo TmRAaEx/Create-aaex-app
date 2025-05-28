@@ -3,8 +3,7 @@ import { createServer as createViteServer } from "vite";
 import getRoutes from "../framework/Routing/parseRoutes.js";
 import { setupApiHandler } from "../framework/Middlewares/apiHandler.js";
 import { setupPageHandler } from "../framework/Middlewares/pageHandler.js";
-import path from "path";
-
+import setupReloader from "../framework/Routing/reloader.js";
 
 export async function startDevServer() {
   const app = express();
@@ -20,15 +19,8 @@ export async function startDevServer() {
   const apiHandler = setupApiHandler(app, vite);
   const pageHandler = setupPageHandler(app, vite, getRoutes);
 
-  //important to register api before pages
-  vite.watcher.on("change", (file) => {
-    if (file.startsWith(path.resolve("src/pages"))) {
-      pageHandler.updateRoutes();
-    }
-    if (file.startsWith(path.resolve("src/api"))) {
-      apiHandler.updateApiRoutes();
-    }
-  });
+  //re-registers routes on file changes
+  setupReloader(vite, pageHandler, apiHandler);
 
   app.listen(3000, () => {
     console.log("✅ Dev server running at http://localhost:3000");
