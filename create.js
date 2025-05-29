@@ -7,6 +7,8 @@ import inquirer from "inquirer";
 import createSrcFolder from "./templates/src-folder.js";
 import createRootFolder from "./templates/root-folder.js";
 
+import { exec } from "child_process";
+
 async function main() {
   const answers = await inquirer.prompt([
     {
@@ -39,9 +41,19 @@ async function main() {
   await createRootFolder(projectDir, answers.projectName, answers.useTailwind);
 
   console.log(`Project setup for "${answers.projectName}" done!`);
-  console.log(`  cd ${answers.projectName}`);
-  console.log("  npm install");
-  console.log("  npm run dev");
+  console.log("Installing dependencies...");
+  const packageManager = fs.existsSync(path.join(projectDir, "yarn.lock")) ? "yarn" : "npm";
+  exec(`${packageManager} install`, { cwd: projectDir }, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error installing dependencies: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Error output: ${stderr}`);
+    }
+    console.log(stdout);
+    console.log("Dependencies installed successfully!");
+  });
 }
 
 main().catch((err) => {
