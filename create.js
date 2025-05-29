@@ -4,7 +4,6 @@ import path from "path";
 import inquirer from "inquirer";
 
 
-import createAaexFolder from "./templates/aaex-folder.js";
 import createSrcFolder from "./templates/src-folder.js";
 import createRootFolder from "./templates/root-folder.js";
 
@@ -32,8 +31,6 @@ async function main() {
 
   await fs.ensureDir(projectDir);
 
-  // Skapa .aaex-mappen
-  createAaexFolder(projectDir);
 
   // Skapa src-mappen
   createSrcFolder(projectDir, answers.useTailwind);

@@ -16,6 +16,7 @@ export default async function createRootFolder(
     "react-router-dom": "^6.14.0",
     "react-router": "^7.6.1",
     chokidar: "^3.5.3",
+    "aaexjs": "latest"
   };
 
   if (useTailwind) {
@@ -25,15 +26,16 @@ export default async function createRootFolder(
       "@tailwindcss/vite": "^4.1.7",
     };
   }
-  
+
   const packageJson = {
     name: projectName,
     version: "1.0.0",
     type: "module",
     scripts: {
-      dev: "node .aaex/server/devServer.js",
-      build: "vite build",
-      preview: "vite preview",
+      dev: "aaexjs dev",
+      build: "aaexjs build",
+      start: "aaexjs start",
+      preview: "echo 'Preview not implemented yet'",
     },
     dependencies: dependencies,
 
