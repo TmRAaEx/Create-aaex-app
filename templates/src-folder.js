@@ -28,6 +28,7 @@ import {
   Route,
   useParams
 } from "react-router-dom";
+import { StaticRouter } from "react-router-dom/server";
 
 import "./index.css"; 
 
@@ -55,7 +56,6 @@ function RouteWrapper({ route, initialData }: { route: RouteInfo; initialData?: 
 
 export default function App({ routes, initialData, url }: AppProps) {
   if (url) {
-    const { StaticRouter } = require("react-router-dom/server");
     return (
       <StaticRouter location={url}>
         <Routes>
