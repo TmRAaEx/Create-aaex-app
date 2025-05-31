@@ -21,16 +21,10 @@ export default function createSrcFolder(baseDir, useTailwind = false) {
   }
 
   // App.tsx
-  const appTsxContent = `import React from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useParams
-} from "react-router-dom";
-import { StaticRouter } from "react-router-dom/server";
-
-import "./index.css"; 
+  const appTsxContent = `// src/App.tsx
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import { AppRoutes } from "../.aaex/framework/Routing/Router";
 
 interface RouteInfo {
   path: string;
@@ -39,52 +33,17 @@ interface RouteInfo {
 
 interface AppProps {
   routes: RouteInfo[];
-  initialData?: any; 
-  url?: string;       
+  initialData?: any;
 }
 
-function RouteWrapper({ route, initialData }: { route: RouteInfo; initialData?: any }) {
-  const Component = React.lazy(() => import(/* @vite-ignore */ route.fullPath));
-  const params = useParams();
-
-  return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <Component params={params} initialData={initialData} />
-    </React.Suspense>
-  );
-}
-
-export default function App({ routes, initialData, url }: AppProps) {
-  if (url) {
-    return (
-      <StaticRouter location={url}>
-        <Routes>
-          {routes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={<RouteWrapper route={route} initialData={initialData} />}
-            />
-          ))}
-        </Routes>
-      </StaticRouter>
-    );
-  }
-
+export default function App({ routes, initialData }: AppProps) {
   return (
     <BrowserRouter>
-      <Routes>
-        {routes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={<RouteWrapper route={route} />}
-          />
-        ))}
-      </Routes>
+      <AppRoutes routes={routes} initialData={initialData} />
     </BrowserRouter>
   );
 }
+
 `;
 
   // API-file: hello.ts
