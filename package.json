@@ -1,6 +1,6 @@
 {
   "name": "create-aaex-app",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "description": "CLI to scaffold a new aaex app with dev server and framework files.",
   "bin": {
     "create-aaex-app": "./create.js"
